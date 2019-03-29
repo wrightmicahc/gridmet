@@ -1,0 +1,69 @@
+---
+title: "Get average days since rain 2000-2018"
+output: html_document
+---
+
+Load packages and source functions.
+
+```{r}
+library(raster)
+library(sf)
+library(data.table)
+library(future.apply)
+
+source("scripts/get_days_since_rain.R")
+```
+
+Load the CA shapefile.
+
+```{r}
+ca <- st_read("data/natural_earth/ne_10m_states/ca.shp")
+```
+
+Get a list of days since rain rasters for RX burns. 
+
+```{r}
+plan(multiprocess)
+
+rx_days <- future_lapply(2000:2018, function(x) get_days_since_rain(x, ca, "RX"))
+```
+
+Stack them and check a plot.
+
+```{r}
+rx_days <- stack(rx_days)
+
+mean_rx_days <- calc(rx_days, fun = mean)
+
+plot(mean_rx_days)
+```
+
+Save the output.
+
+```{r}
+writeRaster(mean_rx_days, "data/pr/avg/mean_rx_days.tif")
+```
+
+Do the same for wildfire.
+
+```{r}
+plan(multiprocess)
+
+wf_days <- future_lapply(2000:2018, function(x) get_days_since_rain(x, ca, "wildfire"))
+```
+
+Stack them and check a plot.
+
+```{r}
+wf_days <- stack(wf_days)
+
+mean_wf_days <- calc(wf_days, fun = mean)
+
+plot(mean_wf_days)
+```
+
+Save the output.
+
+```{r}
+writeRaster(mean_wf_days, "data/pr/avg/mean_wf_days.tif")
+```
