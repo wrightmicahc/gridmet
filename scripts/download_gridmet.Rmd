@@ -1,0 +1,21 @@
+---
+title: "Download gridmet data"
+output: html_document
+---
+
+Load necessary packages and source function for bulk download.
+
+```{r}
+library(future.apply)
+
+source("scripts/get_gridmet.R")
+```
+
+Download precipitation data. 
+
+```{r}
+plan(multiprocess)
+
+get_gridmet(2000, 2018, "pr", "data/pr")
+```
+
