@@ -1,15 +1,22 @@
 ################################################################################
 # This function loads gridmet data from the university of Idaho and saves it to
-# a destination file
+# a destination file. It creates subfolder for variable if missing.
 #
 # minyear: minimum year of range
 # maxyear: maximum year of range
 # variable: which variable to download
-# dest: destination folder
+# dest: destination data folder
 #
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 get_gridmet <- function(minyear, maxyear, variable, dest) {
+  
+  # update dest
+  dest <- paste(dest, variable, sep = "/")
+  
+  if (!file.exists(dest)) {
+    dir.create(dest)
+  }
   
   year_seq <- seq(minyear, maxyear, 1)
   
